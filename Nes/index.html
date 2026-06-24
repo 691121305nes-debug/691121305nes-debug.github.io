@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ไขความลับวงจรอับ (Deadlock) | สื่อการเรียนรู้อบอุ่นใจ</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header>
+        <div class="container header-container">
+            <a href="#" class="logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="9" y1="3" x2="9" y2="21"/>
+                    <line x1="15" y1="3" x2="15" y2="21"/>
+                    <line x1="3" y1="9" x2="21" y2="9"/>
+                    <line x1="3" y1="15" x2="21" y2="15"/>
+                </svg>
+                <span>Deadlock Study Café</span>
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="#objectives">เป้าหมาย</a></li>
+                    <li><a href="#concept">Deadlock คืออะไร?</a></li>
+                    <li><a href="#rag">แผนภาพ RAG</a></li>
+                    <li><a href="#conditions">เงื่อนไข 4 ข้อ</a></li>
+                    <li><a href="#game">เกมปิกนิก</a></li>
+                    <li><a href="#quiz">แบบทดสอบ</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container hero-grid">
+            <div class="hero-content">
+                <h1>อ้อมกอดของ<br><span>วงจรอับ (Deadlock)</span></h1>
+                <p>ยินดีต้อนรับสู่มุมการเรียนรู้ที่อบอุ่นที่สุด มาร่วมกันทำความเข้าใจกลไกของคอมพิวเตอร์เมื่อติดหล่มงานที่ขัดแย้งกันอย่างง่ายๆ ผ่านภาพประกอบเชิงโต้ตอบ และมินิเกมที่จะช่วยแก้ไขปริศนานี้ไปด้วยกัน!</p>
+                <a href="#concept" class="btn">
+                    เริ่มต้นเรียนรู้กันเลย
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </a>
+                <a href="#game" class="btn btn-secondary">เล่นเกมท้าทาย</a>
+            </div>
+            <div class="hero-visual">
+                <div class="traffic-grid-graphic">
+                    <!-- Dynamic SVG showing Cozy Traffic Gridlock Analogy -->
+                    <svg viewBox="0 0 400 400" width="100%" height="100%">
+                        <!-- Warm Cozy Roads Background -->
+                        <rect x="0" y="0" width="400" height="400" fill="#FFF" rx="16" />
+                        <rect x="150" y="0" width="100" height="400" fill="#F5EBE0" />
+                        <rect x="0" y="150" width="400" height="100" fill="#F5EBE0" />
+                        
+                        <!-- Road Dashed Lines -->
+                        <line x1="200" y1="0" x2="200" y2="150" stroke="#FFF" stroke-dasharray="10 10" stroke-width="4" />
+                        <line x1="200" y1="250" x2="200" y2="400" stroke="#FFF" stroke-dasharray="10 10" stroke-width="4" />
+                        <line x1="0" y1="200" x2="150" y2="200" stroke="#FFF" stroke-dasharray="10 10" stroke-width="4" />
+                        <line x1="250" y1="200" x2="400" y2="200" stroke="#FFF" stroke-dasharray="10 10" stroke-width="4" />
+                        
+                        <!-- Cozy Cars (represented as cute boxes with lights) in a Gridlock Loop -->
+                        <!-- Car 1 (Going South, stopped at junction) -->
+                        <g transform="translate(160, 90)">
+                            <rect width="36" height="50" rx="8" fill="#E07A5F" />
+                            <circle cx="8" cy="8" r="4" fill="#F2CC8F" />
+                            <circle cx="28" cy="8" r="4" fill="#F2CC8F" />
+                            <rect x="6" y="44" width="24" height="6" fill="#3F292B" rx="2" />
+                            <text x="18" y="32" font-family="'Outfit'" font-size="14" fill="#FFF" text-anchor="middle" font-weight="700">A</text>
+                        </g>
+                        <!-- Car 2 (Going East, stopped at junction) -->
+                        <g transform="translate(260, 160)">
+                            <rect width="50" height="36" rx="8" fill="#81B29A" />
+                            <circle cx="42" cy="8" r="4" fill="#F2CC8F" />
+                            <circle cx="42" cy="28" r="4" fill="#F2CC8F" />
+                            <rect x="0" y="6" width="6" height="24" fill="#3F292B" rx="2" />
+                            <text x="25" y="23" font-family="'Outfit'" font-size="14" fill="#FFF" text-anchor="middle" font-weight="700">B</text>
+                        </g>
+                        <!-- Car 3 (Going North, stopped at junction) -->
+                        <g transform="translate(204, 260)">
+                            <rect width="36" height="50" rx="8" fill="#F2CC8F" />
+                            <circle cx="8" cy="42" r="4" fill="#E07A5F" />
+                            <circle cx="28" cy="42" r="4" fill="#E07A5F" />
+                            <rect x="6" y="0" width="24" height="6" fill="#3F292B" rx="2" />
+                            <text x="18" y="28" font-family="'Outfit'" font-size="14" fill="#3F292B" text-anchor="middle" font-weight="700">C</text>
+                        </g>
+                        <!-- Car 4 (Going West, stopped at junction) -->
+                        <g transform="translate(90, 204)">
+                            <rect width="50" height="36" rx="8" fill="#6D597A" />
+                            <circle cx="8" cy="8" r="4" fill="#F2CC8F" />
+                            <circle cx="8" cy="28" r="4" fill="#F2CC8F" />
+                            <rect x="44" y="6" width="6" height="24" fill="#3F292B" rx="2" />
+                            <text x="25" y="23" font-family="'Outfit'" font-size="14" fill="#FFF" text-anchor="middle" font-weight="700">D</text>
+                        </g>
+
+                        <!-- Circular arrows showing lock -->
+                        <path d="M 120,130 Q 200,100 280,130" fill="none" stroke="#E07A5F" stroke-width="3" stroke-dasharray="6 4" marker-end="url(#arrow)"/>
+                        <path d="M 280,270 Q 200,300 120,270" fill="none" stroke="#E07A5F" stroke-width="3" stroke-dasharray="6 4" marker-end="url(#arrow)"/>
+
+                        <defs>
+                            <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                              <path d="M 0 0 L 10 5 L 0 10 z" fill="#E07A5F"/>
+                            </marker>
+                        </defs>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Learning Objectives Section -->
+    <section id="objectives" class="objectives">
+        <div class="container">
+            <h2 class="section-title">เป้าหมายการเรียนรู้ของเราวันนี้</h2>
+            <p class="section-subtitle">ผ่อนคลาย จิบชาอุ่นๆ แล้วมาเรียนรู้เป้าหมายหลัก 3 ประการที่จะช่วยเสริมทักษะเรื่องระบบจัดการคอมพิวเตอร์กันเถอะ</p>
+            <div class="objectives-grid">
+                <!-- Obj 1 -->
+                <div class="obj-card">
+                    <div class="obj-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="12" y1="16" x2="12" y2="12"/>
+                            <line x1="12" y1="8" x2="12.01" y2="8"/>
+                        </svg>
+                    </div>
+                    <h3>เข้าใจนิยาม Deadlock</h3>
+                    <p>รู้และเข้าใจกลไกสภาวะ "ติดขัด" หรือวงจรอับของระบบปฏิบัติการ ผ่านการเปรียบเทียบในชีวิตจริง</p>
+                </div>
+                <!-- Obj 2 -->
+                <div class="obj-card">
+                    <div class="obj-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="9" y1="9" x2="15" y2="15"/>
+                            <line x1="15" y1="9" x2="9" y2="15"/>
+                        </svg>
+                    </div>
+                    <h3>ไขเงื่อนไข Coffman</h3>
+                    <p>วิเคราะห์เงื่อนไข 4 ข้อสำคัญ ที่จำเป็นต่อการเกิด Deadlock เสมือนฟันเฟืองที่ขัดจังหวะระบบ</p>
+                </div>
+                <!-- Obj 3 -->
+                <div class="obj-card">
+                    <div class="obj-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
+                            <path d="m9 12 2 2 4-4"/>
+                        </svg>
+                    </div>
+                    <h3>เรียนรู้วิธีป้องกันและแก้ไข</h3>
+                    <p>ศึกษาแนวทางแก้ปัญหา Deadlock ทั้งการสลัดสิทธิ์ (Preemption) และกลยุทธ์จัดสรรอย่างปลอดภัย</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Concept Section -->
+    <section id="concept" class="content-sec">
+        <div class="container">
+            <!-- Block 1: Analogy -->
+            <div class="content-block">
+                <div class="content-text">
+                    <h2>วงจรอับ (Deadlock) คืออะไร? <span>ความรู้พื้นฐาน</span></h2>
+                    <p>ลองนึกภาพ<strong>ถนนเลนเดียวที่แคบมากๆ</strong> มีรถสองคันแล่นสวนทางกันมาเจอกันตรงกลางพอดี! คันสีส้มก็ก้าวหน้าไปต่อไม่ได้เพราะมีคันสีเขียวขวางอยู่ ส่วนคันสีเขียวก็ถอยไม่ได้และเดินหน้าไม่ได้เพราะคันสีส้มขวางอยู่เช่นกัน ทั้งคู่ต่างหยุดรอให้อีกฝ่ายหลีกทางให้... แต่ก็ไม่มีใครยอมหลีกทาง!</p>
+                    <p>ในคอมพิวเตอร์ก็เกิดเรื่องแบบนี้ได้เช่นกัน เรียกว่า <strong>"Deadlock" (วงจรอับ)</strong> ซึ่งเกิดขึ้นเมื่อ โปรเซส (Process หรือโปรแกรมที่กำลังทำงาน) ตั้งแต่ 2 โปรเซสขึ้นไป ไม่สามารถทำงานต่อไปได้ เพราะต่างฝ่ายต่างรอคอยทรัพยากร (Resource เช่น หน่วยความจำ, เครื่องพิมพ์, ไฟล์) ที่อีกฝ่ายถือครองไว้อยู่ ส่งผลให้คอมพิวเตอร์หยุดทำงานชะงักลง</p>
+                    <p><span class="badge-warning">เกร็ดน่ารู้:</span> Deadlock แตกต่างจากความล่าช้าทั่วไป เพราะหากปราศจากผู้จัดการภายนอก (เช่น ระบบปฏิบัติการ หรือผู้ใช้สั่งปิด) ระบบจะติดค้างอยู่ในสภาวะนี้ไปตลอดกาล!</p>
+                </div>
+                <div class="hero-visual">
+                    <!-- Graphic Analogy - Narrow Bridge -->
+                    <svg viewBox="0 0 350 350" width="100%" height="100%" style="background:var(--card-bg); border-radius:var(--border-radius-md); box-shadow:var(--shadow-soft); padding: 16px;">
+                        <rect x="0" y="0" width="350" height="350" fill="#FDFBF7" rx="12" />
+                        
+                        <!-- River -->
+                        <rect x="0" y="120" width="350" height="110" fill="#A8DADC" opacity="0.6"/>
+                        <!-- River detail waves -->
+                        <path d="M10,140 Q30,130 50,140 T90,140 T130,140 T170,140 T210,140 T250,140 T290,140 T330,140" fill="none" stroke="#457B9D" stroke-width="2" opacity="0.4"/>
+                        <path d="M20,180 Q40,170 60,180 T100,180 T140,180 T180,180 T220,180 T260,180 T300,180 T340,180" fill="none" stroke="#457B9D" stroke-width="2" opacity="0.4"/>
+
+                        <!-- Narrow Bridge -->
+                        <rect x="130" y="60" width="90" height="230" fill="#E6CCB2" rx="4"/>
+                        <rect x="145" y="60" width="60" height="230" fill="#DDB892" />
+                        
+                        <!-- Bridge Railing -->
+                        <line x1="135" y1="60" x2="135" y2="290" stroke="#7F5539" stroke-width="4" />
+                        <line x1="215" y1="60" x2="215" y2="290" stroke="#7F5539" stroke-width="4" />
+                        
+                        <!-- Cars on the bridge facing each other -->
+                        <!-- Car A (Going Down) -->
+                        <g transform="translate(157, 100)">
+                            <rect width="36" height="48" rx="8" fill="#E07A5F" />
+                            <circle cx="8" cy="8" r="3" fill="#F2CC8F" />
+                            <circle cx="28" cy="8" r="3" fill="#F2CC8F" />
+                            <text x="18" y="28" font-family="'Outfit'" font-size="12" fill="#FFF" text-anchor="middle" font-weight="700">Car A</text>
+                            <!-- Request Arrow down -->
+                            <path d="M18,52 L18,72" fill="none" stroke="#E07A5F" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow-bridge)"/>
+                        </g>
+                        <!-- Car B (Going Up) -->
+                        <g transform="translate(157, 202)">
+                            <rect width="36" height="48" rx="8" fill="#81B29A" />
+                            <circle cx="8" cy="40" r="3" fill="#F2CC8F" />
+                            <circle cx="28" cy="40" r="3" fill="#F2CC8F" />
+                            <text x="18" y="26" font-family="'Outfit'" font-size="12" fill="#FFF" text-anchor="middle" font-weight="700">Car B</text>
+                            <!-- Request Arrow up -->
+                            <path d="M18,-4 L18,-24" fill="none" stroke="#81B29A" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow-bridge)"/>
+                        </g>
+
+                        <!-- Lock sign in the center -->
+                        <g transform="translate(175, 175)">
+                            <circle cx="0" cy="0" r="16" fill="#3F292B" />
+                            <text x="0" y="5" font-family="sans-serif" font-size="16" fill="#FFF" text-anchor="middle" font-weight="bold">🔒</text>
+                        </g>
+
+                        <defs>
+                            <marker id="arrow-bridge" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                              <path d="M 0 0 L 10 5 L 0 10 z" fill="#3F292B"/>
+                            </marker>
+                        </defs>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Block 2: Resource Allocation Graph (RAG) -->
+            <div id="rag" class="content-block reverse">
+                <div class="interactive-panel">
+                    <div class="rag-diagram-container">
+                        <!-- SVG dynamically manipulated by app.js -->
+                        <svg id="rag-svg" class="rag-svg" viewBox="0 0 450 300">
+                            <!-- Definitions for markers -->
+                            <defs>
+                                <marker id="rag-arrow-request" viewBox="0 0 10 10" refX="18" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+                                    <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#D4A373"/>
+                                </marker>
+                                <marker id="rag-arrow-assign" viewBox="0 0 10 10" refX="18" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+                                    <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#81B29A"/>
+                                </marker>
+                                <marker id="rag-arrow-deadlock" viewBox="0 0 10 10" refX="18" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+                                    <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#E07A5F"/>
+                                </marker>
+                            </defs>
+                            
+                            <!-- Resource Nodes (Squares) -->
+                            <!-- Resource 1 (R1) -->
+                            <g id="node-r1" transform="translate(100, 60)">
+                                <rect x="-30" y="-30" width="60" height="60" rx="8" fill="#FFF" stroke="#81B29A" stroke-width="3" />
+                                <circle cx="0" cy="0" r="6" fill="#81B29A" />
+                                <text x="0" y="44" font-family="'Outfit'" font-size="12" fill="#3F292B" font-weight="700" text-anchor="middle">Resource R1</text>
+                            </g>
+                            <!-- Resource 2 (R2) -->
+                            <g id="node-r2" transform="translate(350, 60)">
+                                <rect x="-30" y="-30" width="60" height="60" rx="8" fill="#FFF" stroke="#81B29A" stroke-width="3" />
+                                <circle cx="0" cy="0" r="6" fill="#81B29A" />
+                                <text x="0" y="44" font-family="'Outfit'" font-size="12" fill="#3F292B" font-weight="700" text-anchor="middle">Resource R2</text>
+                            </g>
+
+                            <!-- Process Nodes (Circles) -->
+                            <!-- Process 1 (P1) -->
+                            <g id="node-p1" transform="translate(100, 220)">
+                                <circle cx="0" cy="0" r="30" fill="#FFF" stroke="#3D348B" stroke-width="3" />
+                                <text x="0" y="6" font-family="'Outfit'" font-size="16" fill="#3F292B" font-weight="700" text-anchor="middle">P1</text>
+                                <text x="0" y="46" font-family="'Kanit'" font-size="12" fill="#6E5D5E" text-anchor="middle">โปรเซส 1</text>
+                            </g>
+                            <!-- Process 2 (P2) -->
+                            <g id="node-p2" transform="translate(350, 220)">
+                                <circle cx="0" cy="0" r="30" fill="#FFF" stroke="#3D348B" stroke-width="3" />
+                                <text x="0" y="6" font-family="'Outfit'" font-size="16" fill="#3F292B" font-weight="700" text-anchor="middle">P2</text>
+                                <text x="0" y="46" font-family="'Kanit'" font-size="12" fill="#6E5D5E" text-anchor="middle">โปรเซส 2</text>
+                            </g>
+
+                            <!-- Edges / Paths (To be rendered and animated by JS) -->
+                            <g id="edges-container"></g>
+                        </svg>
+                    </div>
+                    <div class="step-controls">
+                        <div class="step-info" id="rag-status-text">
+                            ขั้นตอนที่ 1: ระบบเริ่มต้น ทุกอย่างอยู่ในสถานะปลอดภัย (Safe State)
+                        </div>
+                        <div class="step-btn-group">
+                            <button class="btn-step" id="btn-prev-rag" disabled>ย้อนกลับ</button>
+                            <button class="btn-step" id="btn-next-rag">ถัดไป</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="content-text">
+                    <h2>แผนภาพ RAG <span>การโต้ตอบ</span></h2>
+                    <p>ในสถาปัตยกรรมระบบปฏิบัติการ เราวิเคราะห์ความสัมพันธ์ของระบบโดยใช้ <strong>แผนภาพจัดสรรทรัพยากร (Resource Allocation Graph: RAG)</strong></p>
+                    <p>แผนภาพจะแบ่งออกเป็น 2 สัญลักษณ์หลัก:</p>
+                    <ul>
+                        <li>🔵 <strong>โปรเซส (Process)</strong> แทนด้วยรูปวงกลม</li>
+                        <li>🟢 <strong>ทรัพยากร (Resource)</strong> แทนด้วยสี่เหลี่ยม โดยมีจุดกลมๆ ข้างในบอกจำนวนหน่วยที่ยังว่างให้ใช้อยู่</li>
+                    </ul>
+                    <p>ลองกดปุ่ม <strong>"ถัดไป"</strong> ที่แผนภาพจำลอง เพื่อจำลองสถานะทีละเสต็ป และเฝ้าสังเกตการณ์ว่าทิศทางของลูกศรหมุนวนเปลี่ยนเป็น 🔴 <strong>"วงจรปิด" (Cycle)</strong> จนทำให้ระบบล็อคตัวได้อย่างไร!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Coffman Conditions Section -->
+    <section id="conditions" class="conditions-sec">
+        <div class="container">
+            <h2 class="section-title">เงื่อนไข 4 ประการสู่การเกิด Deadlock</h2>
+            <p class="section-subtitle">กฎแห่งวงจรอับ ค้นพบโดย Edward G. Coffman Jr. ซึ่งกล่าวไว้ว่า <b>หากและเพียงหากเงื่อนไขทั้ง 4 ข้อนี้เกิดขึ้นพร้อมกันอย่างสมบูรณ์</b> ระบบถึงจะเกิดสภาวะ Deadlock ขึ้นอย่างหลีกเลี่ยงไม่ได้</p>
+            <div class="conditions-grid">
+                <!-- Condition 1 -->
+                <div class="cond-card">
+                    <div class="cond-num">01</div>
+                    <h3>Mutual Exclusion</h3>
+                    <p><b>สิทธิ์ใช้งานคนเดียว:</b> ทรัพยากรนั้นสามารถเปิดให้ใช้งานได้ทีละหนึ่งโปรเซสในหนึ่งช่วงเวลาเท่านั้น ไม่แบ่งปันให้ใคร (เช่น ปริ้นเตอร์ หรือสิทธิ์เขียนไฟล์)</p>
+                </div>
+                <!-- Condition 2 -->
+                <div class="cond-card">
+                    <div class="cond-num">02</div>
+                    <h3>Hold and Wait</h3>
+                    <p><b>ถือครองและรอคอย:</b> โปรเซสหนึ่งกำลังถือครองทรัพยากรอยู่ชิ้นหนึ่ง แต่ในขณะเดียวกันก็ส่งความต้องการขอใช้งานชิ้นอื่นเพิ่มเติมที่ผู้อื่นถืออยู่</p>
+                </div>
+                <!-- Condition 3 -->
+                <div class="cond-card">
+                    <div class="cond-num">03</div>
+                    <h3>No Preemption</h3>
+                    <p><b>แย่งชิงไม่ได้:</b> ทรัพยากรไม่สามารถถูกบังคับแย่งชิงคืนจากโปรเซสที่ถืออยู่ได้ ต้องรอให้โปรเซสเหล่านั้นปล่อยคืนระบบเองเมื่อทำงานเสร็จ</p>
+                </div>
+                <!-- Condition 4 -->
+                <div class="cond-card">
+                    <div class="cond-num">04</div>
+                    <h3>Circular Wait</h3>
+                    <p><b>การรอคอยเป็นวงกลม:</b> เกิดการเชื่อมโยงความต้องการเป็นวงกลมต่อเนื่อง เช่น P1 รอ P2, P2 รอ P3 และ P3 วนกลับมารอ P1 ที่ถือครองทรัพยากรอยู่</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Game Section -->
+    <section id="game" class="game-sec">
+        <div class="container">
+            <div class="game-card">
+                <div class="game-header">
+                    <div class="game-title">
+                        <h3>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                            </svg>
+                            มินิเกมปิกนิกของผองเพื่อน: ช่วยพ้นวิกฤต Deadlock!
+                        </h3>
+                    </div>
+                    <div class="game-score-panel" id="game-status-label">
+                        สถานะ: ติดขัด (Deadlock!)
+                    </div>
+                </div>
+
+                <div class="game-arena">
+                    <!-- Visual Board (left) -->
+                    <div class="game-visual-board">
+                        <!-- SVGs representing the game characters, resources, and request arcs -->
+                        <svg id="game-svg" viewBox="0 0 450 400" width="100%" height="100%">
+                            <!-- Forest/Picnic background style -->
+                            <rect x="0" y="0" width="450" height="400" fill="#FDFBF7" rx="16"/>
+                            <!-- Cozy ground grass -->
+                            <circle cx="225" cy="200" r="140" fill="#E8F1F5" opacity="0.6" />
+
+                            <!-- Links (Request/Hold paths) -->
+                            <!-- Path: Bear hold Basket -->
+                            <path id="path-bear-basket" d="M 225, 90 L 160, 230" stroke="#81B29A" stroke-width="4" stroke-dasharray="8 4" marker-end="url(#game-arrow)" />
+                            <!-- Path: Bear wants Blanket (held by Rabbit) -->
+                            <path id="path-bear-blanket" d="M 225, 90 L 290, 230" stroke="#D4A373" stroke-width="3" stroke-dasharray="4 4" marker-end="url(#game-arrow)" />
+                            
+                            <!-- Path: Rabbit hold Blanket -->
+                            <path id="path-rabbit-blanket" d="M 290, 230 L 290, 230" stroke="#81B29A" stroke-width="4" />
+                            <!-- Path: Rabbit wants Thermos (held by Squirrel) -->
+                            <path id="path-rabbit-thermos" d="M 290, 230 L 225, 310" stroke="#D4A373" stroke-width="3" stroke-dasharray="4 4" marker-end="url(#game-arrow)" />
+
+                            <!-- Path: Squirrel hold Thermos -->
+                            <path id="path-squirrel-thermos" d="M 225, 310 L 225, 310" stroke="#81B29A" stroke-width="4" />
+                            <!-- Path: Squirrel wants Basket (held by Bear) -->
+                            <path id="path-squirrel-basket" d="M 225, 310 L 160, 230" stroke="#D4A373" stroke-width="3" stroke-dasharray="4 4" marker-end="url(#game-arrow)" />
+
+                            <!-- Animal Characters -->
+                            <!-- Bear (Top Center) -->
+                            <g id="char-bear" class="animal-node" transform="translate(225, 80)">
+                                <circle cx="0" cy="0" r="34" fill="#E8C59A" stroke="#8C6239" stroke-width="3" />
+                                <circle cx="-16" cy="-28" r="12" fill="#E8C59A" stroke="#8C6239" stroke-width="3" />
+                                <circle cx="16" cy="-28" r="12" fill="#E8C59A" stroke="#8C6239" stroke-width="3" />
+                                <circle cx="-16" cy="-28" r="6" fill="#C49B74" />
+                                <circle cx="16" cy="-28" r="6" fill="#C49B74" />
+                                <!-- Eyes -->
+                                <circle cx="-8" cy="-6" r="3" fill="#3F292B" />
+                                <circle cx="8" cy="-6" r="3" fill="#3F292B" />
+                                <!-- Snout -->
+                                <ellipse cx="0" cy="4" rx="8" ry="6" fill="#FFF" />
+                                <polygon points="-4,2 4,2 0,6" fill="#3F292B" />
+                                <text x="0" y="44" font-family="'Kanit'" font-size="12" fill="#3F292B" font-weight="700" text-anchor="middle">พี่หมี (P1)</text>
+                            </g>
+
+                            <!-- Rabbit (Bottom Right) -->
+                            <g id="char-rabbit" class="animal-node" transform="translate(325, 240)">
+                                <circle cx="0" cy="0" r="34" fill="#FFF" stroke="#D4A373" stroke-width="3" />
+                                <!-- Rabbit Ears -->
+                                <path d="M-14,-26 Q-22,-52 -10,-52 Q-2,-52 -4,-26 Z" fill="#FFF" stroke="#D4A373" stroke-width="3" />
+                                <path d="M14,-26 Q22,-52 10,-52 Q2,-52 4,-26 Z" fill="#FFF" stroke="#D4A373" stroke-width="3" />
+                                <path d="M-11,-28 Q-16,-46 -10,-46 Q-4,-46 -6,-28 Z" fill="#FFC0CB" />
+                                <path d="M11,-28 Q16,-46 10,-46 Q4,-46 6,-28 Z" fill="#FFC0CB" />
+                                <!-- Eyes -->
+                                <circle cx="-8" cy="-4" r="3" fill="#3F292B" />
+                                <circle cx="8" cy="-4" r="3" fill="#3F292B" />
+                                <!-- Nose/Mouth -->
+                                <polygon points="-2,2 2,2 0,4" fill="#FFC0CB" />
+                                <text x="0" y="44" font-family="'Kanit'" font-size="12" fill="#3F292B" font-weight="700" text-anchor="middle">น้องกระต่าย (P2)</text>
+                            </g>
+
+                            <!-- Squirrel (Bottom Left) -->
+                            <g id="char-squirrel" class="animal-node" transform="translate(125, 240)">
+                                <circle cx="0" cy="0" r="34" fill="#F4A261" stroke="#E07A5F" stroke-width="3" />
+                                <!-- Ears -->
+                                <polygon points="-22,-20 -28,-36 -12,-26" fill="#F4A261" stroke="#E07A5F" stroke-width="3" />
+                                <polygon points="22,-20 28,-36 12,-26" fill="#F4A261" stroke="#E07A5F" stroke-width="3" />
+                                <!-- Face patch -->
+                                <ellipse cx="0" cy="6" rx="24" ry="16" fill="#FFE5D9" />
+                                <!-- Eyes -->
+                                <circle cx="-8" cy="-4" r="3" fill="#3F292B" />
+                                <circle cx="8" cy="-4" r="3" fill="#3F292B" />
+                                <!-- Nose -->
+                                <circle cx="0" cy="2" r="2.5" fill="#E07A5F" />
+                                <text x="0" y="44" font-family="'Kanit'" font-size="12" fill="#3F292B" font-weight="700" text-anchor="middle">กระรอกน้อย (P3)</text>
+                            </g>
+
+                            <!-- Resource Items (represented visually) -->
+                            <!-- Item 1: Basket (Held by Bear, requested by Squirrel) -->
+                            <g id="item-basket" transform="translate(160, 160)">
+                                <rect x="-20" y="-20" width="40" height="40" rx="8" fill="#FFF" stroke="#81B29A" stroke-width="3" />
+                                <!-- Cute Basket drawing -->
+                                <path d="M -12,-4 L 12,-4 L 10,12 L -10,12 Z" fill="#DDB892" />
+                                <path d="M -10,-4 Q 0,-18 10,-4" fill="none" stroke="#7F5539" stroke-width="2" />
+                                <text x="0" y="32" font-family="'Kanit'" font-size="10" fill="#3F292B" font-weight="600" text-anchor="middle">ตะกร้า (R1)</text>
+                            </g>
+
+                            <!-- Item 2: Blanket (Held by Rabbit, requested by Bear) -->
+                            <g id="item-blanket" transform="translate(290, 160)">
+                                <rect x="-20" y="-20" width="40" height="40" rx="8" fill="#FFF" stroke="#81B29A" stroke-width="3" />
+                                <!-- Cozy Blanket drawing -->
+                                <rect x="-12" y="-12" width="24" height="24" rx="4" fill="#F2CC8F" />
+                                <line x1="-12" y1="0" x2="12" y2="0" stroke="#FFF" stroke-width="2" />
+                                <line x1="0" y1="-12" x2="0" y2="12" stroke="#FFF" stroke-width="2" />
+                                <text x="0" y="32" font-family="'Kanit'" font-size="10" fill="#3F292B" font-weight="600" text-anchor="middle">ผ้าห่ม (R2)</text>
+                            </g>
+
+                            <!-- Item 3: Thermos (Held by Squirrel, requested by Rabbit) -->
+                            <g id="item-thermos" transform="translate(225, 240)">
+                                <rect x="-20" y="-20" width="40" height="40" rx="8" fill="#FFF" stroke="#81B29A" stroke-width="3" />
+                                <!-- Thermos Bottle drawing -->
+                                <rect x="-6" y="-12" width="12" height="24" rx="3" fill="#A8DADC" />
+                                <rect x="-8" y="-6" width="16" height="4" fill="#E07A5F" />
+                                <circle cx="0" cy="-14" r="3" fill="#E07A5F" />
+                                <text x="0" y="32" font-family="'Kanit'" font-size="10" fill="#3F292B" font-weight="600" text-anchor="middle">กระติกน้ำ (R3)</text>
+                            </g>
+
+                            <defs>
+                                <marker id="game-arrow" viewBox="0 0 10 10" refX="28" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                    <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#3F292B"/>
+                                </marker>
+                            </defs>
+                        </svg>
+
+                        <!-- Level Overlay / Success Panel -->
+                        <div class="game-overlay" id="game-overlay">
+                            <h3 id="overlay-title">สำเร็จแล้ว! 🎉</h3>
+                            <p id="overlay-desc">คุณช่วยพวกสัตว์จัดการแบ่งทรัพยากรกันได้อย่างลงตัว ไม่เกิดการล็อคสลับวนลูปแล้ว!</p>
+                            <button class="btn" id="btn-restart-game">เล่นอีกครั้ง</button>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Dialog HUD (right) -->
+                    <div class="game-hud">
+                        <div class="game-dialogue">
+                            <h4 id="dialogue-name">ระบบสื่อสารการสอน</h4>
+                            <p id="dialogue-text">สวัสดีนักพัฒนาตัวน้อย! ตอนนี้ผองเพื่อนในป่ากำลังจะจัดปิกนิกกัน แต่ปรากฏว่าเกิดสภาวะวงจรอับ (Deadlock) แย่งชิงทรัพยากรกันอยู่เป็นวงกลม! ลองใช้ปุ่มทางเลือกขวาเพื่อช่วยปลดล็อคพวกเขากันเถอะ!</p>
+                        </div>
+
+                        <div class="game-controls">
+                            <!-- Action 1: Preemption -->
+                            <button class="btn-game-action" id="btn-action-preempt">
+                                <span>
+                                    ขอคืนตะกร้าจากพี่หมี (Preemption)
+                                    <span class="action-desc"><br>ดึงทรัพยากรกลับคืนชั่วคราว</span>
+                                </span>
+                                <span>🔑</span>
+                            </button>
+
+                            <!-- Action 2: Resource Expansion -->
+                            <button class="btn-game-action" id="btn-action-expand">
+                                <span>
+                                    แจกผ้าห่มเพิ่มอีกผืน! (Resource Expansion)
+                                    <span class="action-desc"><br>เพิ่มทรัพยากรเข้าระบบ</span>
+                                </span>
+                                <span>🧺</span>
+                            </button>
+
+                            <!-- Action 3: Process Termination -->
+                            <button class="btn-game-action" id="btn-action-kill">
+                                <span>
+                                    ขอน้องกระต่ายหลีกทางให้เพื่อน (Process Termination)
+                                    <span class="action-desc"><br>สั่งยกเลิกโปรเซสชั่วคราวเพื่อปลดวงจร</span>
+                                </span>
+                                <span>💤</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Summary & Quiz Section -->
+    <section id="quiz" class="summary-sec">
+        <div class="container">
+            <h2 class="section-title">สรุปเนื้อหา & แบบทดสอบวัดความเข้าใจ</h2>
+            <p class="section-subtitle">จดจำคีย์หลักของ Deadlock และทำแบบทดสอบ 3 ข้อเพื่อรับประกาศนียบัตรนักจัดการระบบปฏิบัติการตัวน้อย!</p>
+            
+            <div class="summary-grid">
+                <!-- Summary Card -->
+                <div class="summary-details">
+                    <div class="summary-card">
+                        <h4>🛡️ การป้องกัน (Prevention)</h4>
+                        <p>กำจัดเงื่อนไขการเกิด Deadlock ตั้งแต่ต้นลม เช่น ปิดกฎ Hold and Wait โดยบังคับให้โปรเซสขอทรัพยากรทั้งหมดตั้งแต่เริ่มรัน</p>
+                    </div>
+                    <div class="summary-card red-side">
+                        <h4>⚖️ การหลีกเลี่ยง (Avoidance)</h4>
+                        <p>เช็คทุกคำขอของระบบว่ามีโอกาสขยับไปสู่จุดอับหรือไม่ (เช่น การประยุกต์ใช้ <b>อัลกอริทึมของธนาคาร - Banker's Algorithm</b>)</p>
+                    </div>
+                    <div class="summary-card purple-side">
+                        <h4>🔍 การตรวจจับและกู้คืน (Detection & Recovery)</h4>
+                        <p>ปล่อยให้เกิดได้ แต่คอยรันฟังก์ชันตรวจวงจรปิดใน RAG เมื่อตรวจพบแล้ว ให้แย่งชิงทรัพยากรคืน (Preempt) หรือปิดโปรเซสทิ้ง (Abort)</p>
+                    </div>
+                </div>
+
+                <!-- Interactive Quiz Container -->
+                <div class="quiz-container">
+                    <div class="quiz-question" id="quiz-question-text">
+                        คำถามที่ 1: ข้อใดต่อไปนี้ไม่ใช่หนึ่งในเงื่อนไข 4 ประการที่จำเป็นสำหรับการเกิด Deadlock?
+                    </div>
+                    <div class="quiz-options" id="quiz-options-container">
+                        <!-- Filled by JS -->
+                    </div>
+                    <div class="quiz-feedback" id="quiz-feedback-text"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>© 2026 Deadlock Study Café. สร้างสรรค์ด้วยความอบอุ่นและตั้งใจ เพื่อส่งต่อความรู้ด้านระบบปฏิบัติการคอมพิวเตอร์อย่างเข้าใจง่าย</p>
+        </div>
+    </footer>
+
+    <!-- App Logic Script -->
+    <script src="app.js"></script>
+</body>
+</html>
